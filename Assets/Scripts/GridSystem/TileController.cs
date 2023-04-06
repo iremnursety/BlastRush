@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -14,10 +13,10 @@ namespace GridSystem
         public TileTypes tileType;
         public TileStates tileState;
         public Vector2 dimensionPos;
-        public Animator childObj;
+        public TileChildController childObj;
         private bool _canBlast;
         private int TileTypeNumber => GridManager.Instance.typeNumber;
-        
+
         private void Start()
         {
             FillTiles();
@@ -56,8 +55,9 @@ namespace GridSystem
             //Instantiate the random TileType as Child object of TileController.
             var newTile =
                 PrefabUtility.InstantiatePrefab(typePrefabs[randomTileType], gameObject.transform) as GameObject;
-            childObj = newTile.GetComponent<Animator>();
-
+            childObj = newTile.GetComponent<TileChildController>();
+            childObj.CreatedChild();
+            childObj.FallingAnimation();
             //_activeCoroutine = null;
         }
 
@@ -68,5 +68,6 @@ namespace GridSystem
                 return;
             GridManager.Instance.CheckMatchingTiles(Mathf.RoundToInt(dimensionPos.x), Mathf.RoundToInt(dimensionPos.y));
         }
+        
     }
 }

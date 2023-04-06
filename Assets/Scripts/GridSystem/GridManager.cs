@@ -16,7 +16,7 @@ namespace GridSystem
         public List<TileController> matchingTiles = new List<TileController>();
         public bool canBlast;
         private Coroutine _activeCoroutine;
-        private static readonly int Blast = Animator.StringToHash("Blast");
+    
 
         private void Awake()
         {
@@ -91,9 +91,14 @@ namespace GridSystem
 
             foreach (var tile in matchingTiles)
             {
-                tile.childObj.SetTrigger(Blast);
+                tile.childObj.BlastAnimation();
             }
-            yield return new WaitForSeconds(0.8f);
+            yield return new WaitForSeconds(0.3f);
+            foreach (var tile in matchingTiles)
+            {
+                tile.childObj.ActivateParticleSystem();
+            }
+            yield return new WaitForSeconds(0.3f);
             foreach (var tile in matchingTiles)
             {
                 Destroy(tile.childObj.gameObject);
@@ -151,12 +156,12 @@ namespace GridSystem
                 return;
 
             //Change Tile Type's parent to the empty Tile type.
-            tile.childObj.transform.SetParent(blastedTile.transform, false);
-
+            tile.childObj.transform.SetParent(blastedTile.transform, true);
+            
             blastedTile.childObj = tile.childObj;
-            blastedTile.childObj.transform.localPosition = Vector3.zero;
             blastedTile.tileType = tile.tileType;
-
+            blastedTile.childObj.FallingAnimation(); //FallingAnimation from TileChildController.
+            
             tile.childObj = null;
             tile.tileType = TileTypes.Empty;
             
@@ -168,6 +173,8 @@ namespace GridSystem
                 CheckBlastedArea(x, y + 1, TileController[x, y + 1], Vector2.down);
                 CheckBlastedArea(x, blastedY, blastedTile, Vector2.down);
             }
+            
         }
+        
     }
 }

@@ -69,6 +69,48 @@ MonoBehaviour:
   tileState: 0
   dimensionPos: {x: 0, y: 0}
   childObj: {fileID: 0}
+  curve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0.9341685
+      outSlope: 0.9341685
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.6827115
+      value: 0.63776755
+      inSlope: -2.7465994
+      outSlope: -2.7465994
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.8154221
+      value: -0.21521246
+      inSlope: 0.07818556
+      outSlope: 0.07818556
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 6.5837383
+      outSlope: 6.5837383
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!212 &5565593766606933939
 SpriteRenderer:
   m_ObjectHideFlags: 0
