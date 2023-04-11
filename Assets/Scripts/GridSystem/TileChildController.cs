@@ -9,7 +9,7 @@ namespace GridSystem
         public AnimationCurve animationCurve;
         private float _t;
         private static readonly int Blast = Animator.StringToHash("Blast");
-        private const float LerpTime = 10f;
+        private const float LerpTime = 1f;
         public ParticleSystem particleSys;
         
         private void Start()

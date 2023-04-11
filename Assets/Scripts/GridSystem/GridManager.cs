@@ -1,6 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using ScoreSystem;
+//using System.Collections.Generic;
 using TimingSystem;
 using UnityEngine;
 
@@ -13,13 +11,12 @@ namespace GridSystem
         [Range(2, 12)] public int rows; // Rows numbers for Grid System.
         [Range(2, 12)] public int columns; //Columns numbers for Grid System
         [Range(1, 6)] public int typeNumber; //Tile type number at the start of the game.
-        public GameObject[,] Grid;
-        public TileController[,] TileController;
-        public List<TileController> matchingTiles = new List<TileController>();
-        public bool canBlast;
-        private Coroutine _activeCoroutine;
+        // public GameObject[,] grid;
+        // public TileController[,] tileController;
+        // public List<TileController> matchingTiles = new List<TileController>();
+        //public bool canBlast;
+        // private Coroutine _activeCoroutine;
         
-
         public void GameStarted()
         {
             TimerManager.Instance.StartGame();
@@ -31,27 +28,27 @@ namespace GridSystem
             else
                 Destroy(gameObject);
 
-            TileController = new TileController[rows, columns];
-            Grid = new GameObject[rows, columns];
+            // tileController = new TileController[rows, columns];
+            // grid = new GameObject[rows, columns];
         }
 
-        private void Start()
-        {
-            canBlast = true;
-        }
+        // private void Start()
+        // {
+        //     canBlast = true;
+        // }
 
-        private void Update()
-        {
-            canBlast = _activeCoroutine == null;
-        }
+        // private void Update()
+        // {
+        //     canBlast = _activeCoroutine == null;
+        // }
 
         //TODO: Add Adjacent Tiles on a List as a group for check TileStates.
-        public void CheckMatchingTiles(int x, int y)
+        /*public void CheckMatchingTiles(int x, int y)
         {
             //Resetting Matching List of Tiles.
             matchingTiles = new List<TileController>();
 
-            var tileType = TileController[x, y].tileType;
+            var tileType = tileController[x, y].tileType;
 
             //Checking tiles for Adjacent on all directions.
             CheckAdjacentTiles(x, y, tileType, Vector2.up);
@@ -65,26 +62,26 @@ namespace GridSystem
 
             //Blasting Matching Tiles.
             _activeCoroutine = StartCoroutine(BlastMatchingTiles());
-        }
+        }*/
 
-        private void CheckAdjacentTiles(int x, int y, TileTypes tileType, Vector2 direction)
+        /*private void CheckAdjacentTiles(int x, int y, TileTypes tileType, Vector2 direction)
         {
             //Getting Adjacent Tiles coordinate.
             var adjacentX = Mathf.RoundToInt(x + direction.x);
             var adjacentY = Mathf.RoundToInt(y + direction.y);
 
             //Checking the board limits.
-            if (adjacentX < 0 || adjacentX >= TileController.GetLength(0) || adjacentY < 0 ||
-                adjacentY >= TileController.GetLength(1))
+            if (adjacentX < 0 || adjacentX >= tileController.GetLength(0) || adjacentY < 0 ||
+                adjacentY >= tileController.GetLength(1))
                 return;
 
-            var adjacentTileType = TileController[adjacentX, adjacentY].tileType;
+            var adjacentTileType = tileController[adjacentX, adjacentY].tileType;
 
             //Checking the Adjacent tile if match with original tile type.
-            if (adjacentTileType != tileType || matchingTiles.Contains(TileController[adjacentX, adjacentY]))
+            if (adjacentTileType != tileType || matchingTiles.Contains(tileController[adjacentX, adjacentY]))
                 return;
 
-            matchingTiles.Add(TileController[adjacentX, adjacentY]);
+            matchingTiles.Add(tileController[adjacentX, adjacentY]);
 
             //Checking Adjacent tiles neighbors for more adjacent.
             CheckAdjacentTiles(adjacentX, adjacentY, tileType, Vector2.up);
@@ -114,14 +111,14 @@ namespace GridSystem
         }
         private IEnumerator AfterBlast() //For check all tiles for empty types.
         {
-            foreach (var tile in TileController)
+            foreach (var tile in tileController)
             {
                 if (tile.childObj)
                     CheckBlastedArea(Mathf.RoundToInt(tile.dimensionPos.x), Mathf.RoundToInt(tile.dimensionPos.y), tile,
                         Vector2.down);
                 yield return null;
             }
-            foreach (var tile in TileController)
+            foreach (var tile in tileController)
             {
                 if (!tile.childObj && Mathf.RoundToInt(tile.dimensionPos.y) == columns - 1)
                 {
@@ -140,10 +137,10 @@ namespace GridSystem
             var blastedY = Mathf.RoundToInt(y + direction.y);
 
             //Checking the board limits.
-            if (blastedY < 0 || blastedY >= TileController.GetLength(1))
+            if (blastedY < 0 || blastedY >= tileController.GetLength(1))
                 return;
 
-            var blastedTile = TileController[x, blastedY];
+            var blastedTile = tileController[x, blastedY];
 
             //Checking the blasted tile If childCount more then 0 for return.
 
@@ -151,11 +148,11 @@ namespace GridSystem
                 return;
 
             /*Pre-check for tile y axis if its equals to the last axis of the board. If the tiles
-             has no child then gonna activate TileController's FillEmptyTile function.*/
+             has no child then gonna activate TileController's FillEmptyTile function.#1#
 
             if (y == columns - 1 && tile.transform.childCount == 0)
             {
-                TileController[x, y].FllEmptyTile();
+                tileController[x, y].FllEmptyTile();
             }
 
             //Checking If tile not have childObject for return.
@@ -177,11 +174,11 @@ namespace GridSystem
                 CheckBlastedArea(x, blastedY, blastedTile, Vector2.down);
             else
             {
-                CheckBlastedArea(x, y + 1, TileController[x, y + 1], Vector2.down);
+                CheckBlastedArea(x, y + 1, tileController[x, y + 1], Vector2.down);
                 CheckBlastedArea(x, blastedY, blastedTile, Vector2.down);
             }
             
-        }
+        }*/
         
     }
 }

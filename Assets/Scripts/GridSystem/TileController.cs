@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
@@ -14,6 +13,7 @@ namespace GridSystem
         public TileStates tileState;
         public Vector2 dimensionPos;
         public TileChildController childObj;
+        public GridController gridCont;
         private bool _canBlast;
         private int TileTypeNumber => GridManager.Instance.typeNumber;
 
@@ -24,7 +24,8 @@ namespace GridSystem
 
         private void Update()
         {
-            _canBlast=GridManager.Instance.canBlast;
+            //_canBlast=GridManager.Instance.canBlast;
+            _canBlast = gridCont.canBlast;
         }
 
         public void FllEmptyTile() //Added for reach from GridManager.
@@ -35,7 +36,9 @@ namespace GridSystem
         {
             yield return new WaitForSeconds(0.01f);
             FillTiles();
-            GridManager.Instance.CheckBlastedArea(Mathf.RoundToInt(dimensionPos.x),Mathf.RoundToInt(dimensionPos.y),this,Vector2.down);
+            //GridManager.Instance.CheckBlastedArea(Mathf.RoundToInt(dimensionPos.x),Mathf.RoundToInt(dimensionPos.y),this,Vector2.down);
+            gridCont.CheckBlastedArea(Mathf.RoundToInt(dimensionPos.x), Mathf.RoundToInt(dimensionPos.y), this,
+                Vector2.down);
         }
         private void FillTiles() //Filling the Tiles.
         {
@@ -54,7 +57,7 @@ namespace GridSystem
 
             //Instantiate the random TileType as Child object of TileController.
             var newTile =
-                PrefabUtility.InstantiatePrefab(typePrefabs[randomTileType], gameObject.transform) as GameObject;
+                Instantiate(typePrefabs[randomTileType], gameObject.transform);
             if (newTile != null)
                 childObj = newTile.GetComponent<TileChildController>();
             
@@ -68,7 +71,9 @@ namespace GridSystem
         {
             if (!_canBlast)
                 return;
-            GridManager.Instance.CheckMatchingTiles(Mathf.RoundToInt(dimensionPos.x), Mathf.RoundToInt(dimensionPos.y));
+            //GridManager.Instance.CheckMatchingTiles(Mathf.RoundToInt(dimensionPos.x), Mathf.RoundToInt(dimensionPos.y));
+            gridCont.CheckMatchingTiles(Mathf.RoundToInt(dimensionPos.x), Mathf.RoundToInt(dimensionPos.y));
+
         }
         
     }
