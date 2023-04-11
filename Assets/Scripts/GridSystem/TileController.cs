@@ -55,7 +55,9 @@ namespace GridSystem
             //Instantiate the random TileType as Child object of TileController.
             var newTile =
                 PrefabUtility.InstantiatePrefab(typePrefabs[randomTileType], gameObject.transform) as GameObject;
-            childObj = newTile.GetComponent<TileChildController>();
+            if (newTile != null)
+                childObj = newTile.GetComponent<TileChildController>();
+            
             childObj.CreatedChild();
             childObj.FallingAnimation();
             //_activeCoroutine = null;

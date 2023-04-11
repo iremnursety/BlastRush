@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using ScoreSystem;
+using TimingSystem;
 using UnityEngine;
 
 namespace GridSystem
@@ -16,8 +18,12 @@ namespace GridSystem
         public List<TileController> matchingTiles = new List<TileController>();
         public bool canBlast;
         private Coroutine _activeCoroutine;
-    
+        
 
+        public void GameStarted()
+        {
+            TimerManager.Instance.StartGame();
+        }
         private void Awake()
         {
             if (Instance == null)
@@ -103,6 +109,7 @@ namespace GridSystem
             {
                 Destroy(tile.childObj.gameObject);
             }
+            ScoreManager.Instance.CalculateAddingScore(matchingTiles.Count);
             _activeCoroutine = StartCoroutine(AfterBlast());
         }
         private IEnumerator AfterBlast() //For check all tiles for empty types.

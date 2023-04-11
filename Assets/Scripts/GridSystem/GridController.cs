@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,14 +9,13 @@ namespace GridSystem
         [SerializeField] private GameObject tilePrefab;
         private static int Rows => GridManager.Instance.rows;
         private static int Columns => GridManager.Instance.columns;
-        
 
-        private void Start()
+
+        public void Start()
         {
-            CreateGrid();
+            StartCoroutine(CreateGrid());
         }
-        
-        private void CreateGrid() //Creating Grid System at the start of the game.
+        private IEnumerator CreateGrid() //Creating Grid System at the start of the game.
         {
             for (var i = 0; i < Rows; i++)
             {
@@ -34,8 +34,11 @@ namespace GridSystem
                     
                     GridManager.Instance.TileController[i, j] = newTileCont;
                     GridManager.Instance.Grid[i, j] = newTile;
+                    yield return new WaitForSeconds(0.07f);
                 }
             }
+            GridManager.Instance.GameStarted();
+            
         }
         
     }
