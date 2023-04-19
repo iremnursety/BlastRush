@@ -40,7 +40,6 @@ namespace GridSystem
         private IEnumerator ChangePosition()//For Tile type's falling to the down.
         {
             _t = 0;
-            //yield return new WaitForSeconds(0.3f);
             while (_t < LerpTime)
             {
                 _t += Time.deltaTime;
@@ -53,5 +52,6 @@ namespace GridSystem
             _t = LerpTime;
             transform.localPosition = Vector3.zero;
         }
+        
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TimerSystem;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
@@ -11,7 +12,7 @@ namespace GridSystem
         [SerializeField] private List<GameObject> typePrefabs = new List<GameObject>();
         public TileTypes tileType;
         public TileStates tileState;
-        public Vector2 dimensionPos;
+        public Vector2Int dimensionPos;
         public TileChildController childObj;
         public GridController gridCont;
         private bool _canBlast;
@@ -24,18 +25,18 @@ namespace GridSystem
 
         private void Update()
         {
-            //_canBlast=GridManager.Instance.canBlast;
             _canBlast = gridCont.canBlast;
         }
-
+        
         public void FllEmptyTile() //Added for reach from GridManager.
         {
             StartCoroutine(Fill());
         }
         private IEnumerator Fill() //For fill the empty tile.
         {
-            yield return new WaitForSeconds(0.01f);
-            FillTiles();
+            yield return new WaitForSeconds(0.001f);
+            if(!childObj)
+                FillTiles();
             //GridManager.Instance.CheckBlastedArea(Mathf.RoundToInt(dimensionPos.x),Mathf.RoundToInt(dimensionPos.y),this,Vector2.down);
             gridCont.CheckBlastedArea(Mathf.RoundToInt(dimensionPos.x), Mathf.RoundToInt(dimensionPos.y), this,
                 Vector2.down);
@@ -69,9 +70,13 @@ namespace GridSystem
         //Sending Tile Information to the GridManager with PointerClick for check Matching Tiles.
         public void OnPointerClick(PointerEventData eventData)
         {
+            if (TimeManager.Instance.timeUp)
+                return;
+            if (gridCont.forAI)
+                return;
             if (!_canBlast)
                 return;
-            //GridManager.Instance.CheckMatchingTiles(Mathf.RoundToInt(dimensionPos.x), Mathf.RoundToInt(dimensionPos.y));
+            
             gridCont.CheckMatchingTiles(Mathf.RoundToInt(dimensionPos.x), Mathf.RoundToInt(dimensionPos.y));
 
         }
