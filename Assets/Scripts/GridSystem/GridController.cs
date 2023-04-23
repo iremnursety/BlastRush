@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using ScoreSystem;
 using UnityEngine;
 
@@ -10,7 +11,8 @@ namespace GridSystem
         [SerializeField] private GameObject tilePrefab;
         private static int Rows => GridManager.Instance.rows;
         private static int Columns => GridManager.Instance.columns;
-        
+        private static bool PowerUpsAvailable => GridManager.Instance.powerUpAvailable;
+        private bool _powerUpBlasted;
         private GameObject[,] _grid;
         public TileController[,] TileController;
         public List<TileController> matchingTiles = new List<TileController>();
@@ -25,9 +27,57 @@ namespace GridSystem
         {
             TileController = new TileController[Rows, Columns];
             _grid = new GameObject[Rows, Columns];
+            _powerUpBlasted = false;
             canBlast = false;
             
             _activeCoroutine = StartCoroutine(CreateGrid());
+            RegisterToManager();
+        }
+
+        private void RegisterToManager()
+        {
+            if(!GridManager.Instance.gridControllers.Contains(this))
+                GridManager.Instance.gridControllers.Add(this);
+        }
+
+        public void ResetGame()
+        {
+            StartCoroutine(DestroyAll());
+        }
+
+        public void TimeIsUp()
+        {
+            foreach (var tile in TileController)
+            {
+                if(tile.childObj)
+                    tile.childObj.StopAnimation();
+            }
+        }
+        private IEnumerator DestroyAll()
+        {
+            foreach (var tile in TileController)
+            {
+                tile.childObj.BlastTileChild();
+                yield return null;
+            }
+            yield return new WaitForSeconds(0.6f);
+            foreach (var tile in TileController)
+            {
+                Destroy(tile);
+            }
+            foreach (var grid in _grid )
+            {
+                Destroy(grid);
+            }
+            
+            TileController = new TileController[Rows, Columns];
+            _grid = new GameObject[Rows, Columns];
+            
+            _powerUpBlasted = false;
+            canBlast = false;
+            
+            _activeCoroutine = StartCoroutine(CreateGrid());
+            
         }
 
         private void Update()
@@ -59,6 +109,7 @@ namespace GridSystem
                     yield return new WaitForSeconds(0.07f);
                 }
             }
+            
             GridManager.Instance.GameStarted();
             _activeCoroutine = null;
           
@@ -71,6 +122,12 @@ namespace GridSystem
             matchingTiles = new List<TileController>();
             var tileType = TileController[x, y].tileType;
 
+            if (tileType == TileTypes.PowerUp1)
+            {
+                canBlast = false;
+                PowerUpBlasting(TileController[x, y]);
+                return;
+            }
             //Checking tiles for Adjacent on all directions.
             CheckAdjacentTiles(x, y, tileType, Vector2.up);
             CheckAdjacentTiles(x, y, tileType, Vector2.down);
@@ -80,7 +137,7 @@ namespace GridSystem
             //If there are more than 1 matching tiles, add them to the matching list
             if (matchingTiles.Count < 1)
             {
-                canBlast = true;
+                _activeCoroutine = null;
                 return;
             }
 
@@ -118,15 +175,11 @@ namespace GridSystem
         {
             foreach (var tile in matchingTiles)
             {
-                tile.childObj.BlastAnimation();
+                tile.childObj.BlastTileChild();
             }
-            yield return new WaitForSeconds(0.3f);
-            foreach (var tile in matchingTiles)
-            {
-                tile.childObj.ActivateParticleSystem();
-            }
-            yield return new WaitForSeconds(0.3f);
-            foreach (var tile in matchingTiles)
+            yield return new WaitForSeconds(0.6f);
+           
+            foreach (var tile in matchingTiles.Where(tile => tile.childObj))
             {
                 Destroy(tile.childObj.gameObject);
             }
@@ -139,9 +192,54 @@ namespace GridSystem
 
             _activeCoroutine = StartCoroutine(AfterBlast());
         }
-        
+
+        private void CreatePowerUp()
+        {
+            if (matchingTiles.Count >= 5)
+            {
+                matchingTiles[0].PowerUpChanges(6);
+            }
+        }
+        public bool PowerUpBlasted
+        {
+            set => _powerUpBlasted = value;
+        }
+
+        public void PowerUpBlasting(TileController tileCont)
+        {
+            _activeCoroutine=StartCoroutine(PowerUpBlast(tileCont));
+        }
+
+        private IEnumerator PowerUpBlast(TileController tileCont)
+        {
+            var tileType = tileCont.tileType;
+            matchingTiles = new List<TileController>();
+            
+            if (tileType == TileTypes.PowerUp1)
+            {
+                var tileCoordinate = tileCont.dimensionPos;
+                for (var x = tileCoordinate.x-1; x < tileCoordinate.x + 2; x++)
+                {
+                    for (var y = tileCoordinate.y-1; y < tileCoordinate.y + 2; y++)
+                    {
+                        if (y < 0 || y >= TileController.GetLength(1))
+                            continue;
+                        if (x < 0 || x >= TileController.GetLength(0))
+                            continue;
+                        
+                        matchingTiles.Add(TileController[x,y]);
+                        yield return null;
+                    }
+                }
+                _activeCoroutine=StartCoroutine(BlastMatchingTiles());
+            }
+                
+        }
         private IEnumerator AfterBlast() //For check all tiles for empty types.
         {
+            if(PowerUpsAvailable&&!_powerUpBlasted)
+                CreatePowerUp();
+            
             foreach (var tile in TileController)
             {
                 if (tile.childObj)

@@ -11,7 +11,7 @@ namespace GridSystem
         private static readonly int Blast = Animator.StringToHash("Blast");
         private const float LerpTime = 1f;
         public ParticleSystem particleSys;
-        
+
         private void Start()
         {
             CreatedChild();
@@ -20,12 +20,26 @@ namespace GridSystem
         public void CreatedChild()
         {
             particleSys = gameObject.transform.GetChild(1).GetComponent<ParticleSystem>();
+            StopAnimation();
+        }
+
+        public void StopAnimation()
+        {
             particleSys.Stop();
         }
 
-        public void BlastAnimation()//Before blast blasting animation trigger.
+        public bool PowerUpBool { get; set; }
+
+        public void BlastTileChild()
+        {
+            StartCoroutine(BlastAnimation());
+        }
+
+        private IEnumerator BlastAnimation()//Before blast blasting animation trigger.
         {
             animator.SetTrigger(Blast);
+            yield return new WaitForSeconds(0.3f);
+            ActivateParticleSystem();
         }
 
         public void FallingAnimation()
@@ -33,10 +47,11 @@ namespace GridSystem
             StartCoroutine(ChangePosition());
         }
 
-        public void ActivateParticleSystem()
+        private void ActivateParticleSystem()
         {
             particleSys.Play();
         }
+        
         private IEnumerator ChangePosition()//For Tile type's falling to the down.
         {
             _t = 0;

@@ -12,7 +12,7 @@ namespace ScoreSystem
         private int _newScore;
         public int scoreAI;
         private int _newScoreAI;
-        
+        public bool resetGame;
 
         private void Awake()
         {
@@ -24,17 +24,23 @@ namespace ScoreSystem
 
         private void Start()
         {
-            scorePlayer = 0;
+            ResetScores();
+        }
+        public void ResetScores()
+        {
             scoreAI = 0;
-          
+            scorePlayer = 0;
+            
             UIManager.Instance.PlayerScoreText = scorePlayer;
             UIManager.Instance.AIScoreText = scoreAI;
         }
-
+        
         private IEnumerator IncreaseScorePlayer()
         {
             while (scorePlayer != _newScore)
             {
+                if (resetGame)
+                    break;
                 scorePlayer += 1;
                 UIManager.Instance.PlayerScoreText=scorePlayer;
 
@@ -50,6 +56,8 @@ namespace ScoreSystem
         {
             while (scoreAI != _newScoreAI)
             {
+                if (resetGame)
+                    break;
                 scoreAI += 1;
                 UIManager.Instance.AIScoreText=scoreAI;
 
@@ -80,9 +88,14 @@ namespace ScoreSystem
         }
         private IEnumerator CheckWinner()
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(3f);
             UIManager.Instance.WinnerVisible = true;
             UIManager.Instance.WinnerText = scorePlayer > scoreAI ? "Player" : "Enemy";
+
+            yield return new WaitForSeconds(0.1f);
+
+            UIManager.Instance.GameTimeVisible = false;
+            UIManager.Instance.ResetButtonVisible = true;
         }
     }
 }

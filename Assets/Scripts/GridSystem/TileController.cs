@@ -27,20 +27,22 @@ namespace GridSystem
         {
             _canBlast = gridCont.canBlast;
         }
-        
+
         public void FllEmptyTile() //Added for reach from GridManager.
         {
             StartCoroutine(Fill());
         }
+
         private IEnumerator Fill() //For fill the empty tile.
         {
             yield return new WaitForSeconds(0.001f);
-            if(!childObj)
+            if (!childObj)
                 FillTiles();
             //GridManager.Instance.CheckBlastedArea(Mathf.RoundToInt(dimensionPos.x),Mathf.RoundToInt(dimensionPos.y),this,Vector2.down);
             gridCont.CheckBlastedArea(Mathf.RoundToInt(dimensionPos.x), Mathf.RoundToInt(dimensionPos.y), this,
                 Vector2.down);
         }
+
         private void FillTiles() //Filling the Tiles.
         {
             var randomTileType = Random.Range(0, TileTypeNumber);
@@ -61,10 +63,31 @@ namespace GridSystem
                 Instantiate(typePrefabs[randomTileType], gameObject.transform);
             if (newTile != null)
                 childObj = newTile.GetComponent<TileChildController>();
-            
+
             childObj.CreatedChild();
             childObj.FallingAnimation();
             //_activeCoroutine = null;
+        }
+
+        public void PowerUpChanges(int index)
+        {
+            tileType = index switch
+            {
+                6 => TileTypes.PowerUp1,
+                _ => TileTypes.Empty
+            };
+            
+            if(childObj)
+                Destroy(childObj);
+            
+            var newTile =
+                Instantiate(typePrefabs[index], gameObject.transform);
+            if (newTile != null)
+                childObj = newTile.GetComponent<TileChildController>();
+
+            childObj.PowerUpBool = true;
+            childObj.CreatedChild();
+            childObj.FallingAnimation();
         }
 
         //Sending Tile Information to the GridManager with PointerClick for check Matching Tiles.
@@ -76,10 +99,17 @@ namespace GridSystem
                 return;
             if (!_canBlast)
                 return;
-            
-            gridCont.CheckMatchingTiles(Mathf.RoundToInt(dimensionPos.x), Mathf.RoundToInt(dimensionPos.y));
 
+            if (!childObj.PowerUpBool)
+            {
+                gridCont.CheckMatchingTiles(Mathf.RoundToInt(dimensionPos.x), Mathf.RoundToInt(dimensionPos.y));
+                gridCont.PowerUpBlasted = false;
+            }
+            else
+            {
+                gridCont.PowerUpBlasting(this);
+                gridCont.PowerUpBlasted = true;
+            }
         }
-        
     }
 }

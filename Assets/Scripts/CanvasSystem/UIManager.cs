@@ -13,6 +13,7 @@ namespace CanvasSystem
         public TextMeshProUGUI scoreText;
         public TextMeshProUGUI scoreAIText;
         public TextMeshProUGUI winner;
+        public GameObject resetButton;
         private void Awake()
         {
             if (Instance == null)
@@ -20,12 +21,19 @@ namespace CanvasSystem
             else
                 Destroy(gameObject);
 
+            ResetGame();
+        }
+
+        public void ResetGame()
+        {
             GameStartingVisible = false;
             GameTimeVisible = false;
-            BlockingPanelVisible = true;
             ScorePlayerVisible = false;
             ScoreAIVisible = false;
             WinnerVisible = false;
+            ResetButtonVisible = false;
+            
+            BlockingPanelVisible = true;
         }
 
       
@@ -78,6 +86,9 @@ namespace CanvasSystem
         {
             set => scoreAIText.gameObject.SetActive(value);
         }
-        
+        public bool ResetButtonVisible
+        {
+            set => resetButton.gameObject.SetActive(value);
+        }
     }
 }

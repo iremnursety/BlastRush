@@ -14,24 +14,38 @@ namespace AISystem
         public GridController gridCont;
         public int thinkingTime;
         private bool _timeUp;
+        public bool resetGame;
         
         private void Start()
         {
-            StartCoroutine(AITurn());
+            RegisterToManager();
+            StartAI();
         }
 
+        public void StartAI()
+        {
+            _timeUp = TimeManager.Instance.timeUp;
+            resetGame = false;
+            StartCoroutine(AITurn());
+        }
         private void Update()
         {
             _timeUp = TimeManager.Instance.timeUp;
         }
 
+        private void RegisterToManager()
+        {
+            GridManager.Instance.aiControllers.Add(this);
+        }
         private IEnumerator AITurn()//AI Random selection for tiles.
         {
             Debug.Log("Started Coroutine");
-            _timeUp = TimeManager.Instance.timeUp;
+           
             while (!_timeUp)
             {
                 if (_timeUp)
+                    break;
+                if (resetGame)
                     break;
                 if (UIManager.Instance.BlockingPanelVisible)
                 {
@@ -44,8 +58,7 @@ namespace AISystem
                     yield return new WaitForSeconds(1f);
                     continue;
                 }
-                if (_timeUp)
-                    break;
+                
                 _tileController = gridCont.TileController;
 
                 var randomX = Random.Range(0,_tileController.GetLength(0));

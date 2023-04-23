@@ -8,6 +8,7 @@
          Type4,
          Type5,
          Type6,
+         PowerUp1,
          Empty
      }
  }
